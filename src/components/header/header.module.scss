@@ -1,0 +1,18 @@
+.headerContainer {
+  display: flex;
+  align-items: center;
+  background: rgb(141, 2, 228);
+  img {
+    height: 30px;
+  }
+  .userDetails {
+    margin: 0 10px 0 auto;
+    color: white;
+  }
+  input {
+    flex-grow: 1;
+    padding: 5px;
+    outline: 0;
+    margin: 0 15px;
+  }
+}

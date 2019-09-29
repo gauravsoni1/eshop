@@ -1,0 +1,37 @@
+.listingContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  main {
+    display: flex;
+    .filters {
+      width: 220px;
+      flex-shrink: 0;
+      .filterMenu {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        span {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+    .productCatalog {
+      flex-grow: 1;
+      display: flex;
+      flex-wrap: wrap;
+      padding-bottom: 30px;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  footer {
+    position: absolute;
+    bottom: 0;
+    height: 30px;
+    background: lightslategrey;
+    width: 100%;
+  }
+}

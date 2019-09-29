@@ -1,0 +1,27 @@
+.loginPage{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    height: inherit;
+}
+
+.loginContainer{
+    width: 300px;
+    padding: 15px;
+    input{
+        margin: 5px;
+        padding: 5px;
+        outline: none;
+    }
+    button{
+        margin-top: 10px;
+        padding: 10px;
+        width: 50%;
+        align-self: center;
+    }
+}
+
+.loginBody{
+    display: flex;
+    flex-direction: column;
+}
