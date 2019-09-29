@@ -1,24 +1,30 @@
 import React from "react";
 import styles from "./checkboxFilter.module.scss";
 
-const colors = [
-  {
-    color: "#F5F5DC",
-    title: "Beige"
-  },
-  {
-    color: "#292421",
-    title: "Black"
-  }
-];
+const selectedCheckbox = [];
 
-const CheckboxFilter = props => {  
-  const renderOptions = () => {    
+const CheckboxFilter = props => {
+  
+
+  const toggleCheckbox = e => {
+    const item = e.target.value;
+    if (e.target.checked) {
+      selectedCheckbox.push(item);
+    } else if (!e.target.checked) {
+      const index = selectedCheckbox.findIndex(val => val === item);
+      selectedCheckbox.splice(index, 1);
+    }
+    if (typeof props.onChange === "function") {
+      props.onChange(selectedCheckbox);
+    }
+  };
+
+  const renderOptions = () => {
     return props.options.map((item, index) => {
       return (
         <label key={item.color}>
           <span>{item.title}</span>
-          <input type="checkbox" value={item.color} />
+          <input onChange={toggleCheckbox} type="checkbox" value={item.color} />
         </label>
       );
     });

@@ -34,10 +34,13 @@ const minMaxData = [
 class ProductListing extends Component {
   state = {
     products: [],
+    filteredProducts:[],
     priceFilter: [],
-    colorFilter: []
+    colorFilter: [],
+    selectedFilters: [{ color: [] }, { price: [] }]
   };
 
+  //Helper function to find the required filter
   findFilter(arr, filterType) {
     return arr.find(item => item.type === filterType).values;
   }
@@ -54,6 +57,7 @@ class ProductListing extends Component {
           this.findFilter(filters.data, "PRICE");
           this.setState({
             products: products.data,
+            filteredProducts: products.data,
             priceFilter: this.findFilter(filters.data, "PRICE"),
             colorFilter: this.findFilter(filters.data, "COLOUR")
           });
@@ -63,7 +67,7 @@ class ProductListing extends Component {
 
   //Render the list of product catalog
   renderProducts = () => {
-    return this.state.products.map(product => {
+    return this.state.filteredProducts.map(product => {
       return <Product key={product.id} data={product} />;
     });
   };
@@ -77,17 +81,23 @@ class ProductListing extends Component {
       });
   };
 
+  colorFilterUpdated =(filter) =>{    
+    console.log(filter);
+    const filteredData = this.filterData(this.state.products,{color:filter})
+    this.setState({filteredProducts:filteredData});
+  }
+
   filterData = (arr, filters) => {
     let filteredData = [...arr];
     try {
-      if (filters.color) {
+      if (Array.isArray(filters.color) && filters.color.length>0) {
         filteredData = filteredData.filter(item => {
-          if (item.colour.color === filters.color) {
+          if (filters.color.includes(item.colour.color)) {
             return item;
           }
         });
       }
-  
+
       if (filters.price) {
         filteredData = filteredData.filter(item => {
           if (
@@ -110,7 +120,7 @@ class ProductListing extends Component {
       }
     } catch {}
     return filteredData;
-  }
+  };
 
   render() {
     return (
@@ -125,14 +135,14 @@ class ProductListing extends Component {
                 <MdRefresh /> Reset
               </span>
             </div>
-            <CheckboxFilter title="Colors" options={this.state.colorFilter} />
+            <CheckboxFilter onChange={this.colorFilterUpdated} title="Colors" options={this.state.colorFilter} />
             {/* <CheckboxFilter title="Brands" options={brandOptions} /> */}
             <MinMaxFilter title="Price" data={this.state.priceFilter} />
             <MinMaxFilter title="Discount" data={discountOptions} />
           </div>
           {/* Load the product catalog */}
           <div className={styles.productCatalog}>
-            {this.state.products.length > 0 ? (
+            {this.state.filteredProducts.length > 0 ? (
               this.renderProducts()
             ) : (
               <div className="txt-blue">Loading ...</div>
