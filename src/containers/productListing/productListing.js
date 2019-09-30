@@ -8,12 +8,16 @@ import MinMaxFilter from "../../components/minMaxFilter/minMaxFilter";
 import Product from "../../components/product/product";
 import axios from "axios";
 
-const colorOptions = ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"];
-const brandOptions = ["b1", "b2", "b3", "b4", "b5", "b6", "b7"];
+//Selected filters
+let selectedFilters = {
+  color: [],
+  price: { min: "Min", max: "Max" },
+  discount: { min: "Min", max: "Max" }
+};
 
 //Discount options
 const discountOptions = [
-  { displayValue: "Min", key: "0" },
+  { displayValue: "Min", key: "Min" },
   { displayValue: "10 %", key: "10" },
   { displayValue: "20 %", key: "20" },
   { displayValue: "30 %", key: "30" },
@@ -23,7 +27,7 @@ const discountOptions = [
   { displayValue: "70 %", key: "70" },
   { displayValue: "80 %", key: "80" },
   { displayValue: "90 %", key: "90" },
-  { displayValue: "Max", key: "100" }
+  { displayValue: "100 %", key: "Max" }
 ];
 
 const minMaxData = [
@@ -34,10 +38,14 @@ const minMaxData = [
 class ProductListing extends Component {
   state = {
     products: [],
-    filteredProducts:[],
+    filteredProducts: [],
     priceFilter: [],
     colorFilter: [],
-    selectedFilters: [{ color: [] }, { price: [] }]
+    selectedFilter: {
+      color: [],
+      price: { min: "Min", max: "Max" },
+      discount: { min: "Min", max: "Max" }
+    }
   };
 
   //Helper function to find the required filter
@@ -77,32 +85,86 @@ class ProductListing extends Component {
     axios
       .get(`https://xebiascart.herokuapp.com/products?title=${term}`)
       .then(res => {
-        this.setState({ products: res.data });
+        this.setState({ filteredProducts: res.data });
       });
   };
 
-  colorFilterUpdated =(filter) =>{    
+  colorFilterUpdated = filter => {
     console.log(filter);
-    const filteredData = this.filterData(this.state.products,{color:filter})
-    this.setState({filteredProducts:filteredData});
-  }
+    this.setState(
+      prevProps => {
+        return {
+          selectedFilter: { ...prevProps.selectedFilter, color: filter }
+        };
+      },
+      () => {
+        this.filterData(this.state.products, this.state.selectedFilter);
+      }
+    );
+  };
+
+  priceFilterUpdated = filter => {
+    this.setState(
+      prevProps => {
+        return {
+          selectedFilter: { ...prevProps.selectedFilter, price: filter }
+        };
+      },
+      () => {
+        this.filterData(this.state.products, this.state.selectedFilter);
+      }
+    );
+  };
+
+  discountFilterUpdated = filter => {
+    this.setState(
+      prevProps => {
+        return {
+          selectedFilter: { ...prevProps.selectedFilter, discount: filter }
+        };
+      },
+      () => {
+        this.filterData(this.state.products, this.state.selectedFilter);
+      }
+    );
+  };
+
+  resetFilters = () => {
+    this.setState(
+      prevprops => {
+        return {
+          selectedFilter: {
+            ...prevprops.selectedFilter,
+            color: [],
+            price: { min: "Min", max: "Max" },
+            discount:{ min: "Min", max: "Max" }
+          }
+        };
+      },
+      () => {
+        this.filterData(this.state.products, this.state.selectedFilter);
+      }
+    );
+    console.log(this.state);
+  };
 
   filterData = (arr, filters) => {
     let filteredData = [...arr];
     try {
-      if (Array.isArray(filters.color) && filters.color.length>0) {
+      if (Array.isArray(filters.color) && filters.color.length > 0) {
         filteredData = filteredData.filter(item => {
           if (filters.color.includes(item.colour.color)) {
             return item;
           }
         });
       }
-
       if (filters.price) {
         filteredData = filteredData.filter(item => {
           if (
-            item.price.final_price >= filters.price.min &&
-            item.price.final_price <= filters.price.max
+            (item.price.final_price >= filters.price.min ||
+              filters.price.min === "Min") &&
+            (item.price.final_price <= filters.price.max ||
+              filters.price.max === "Max")
           ) {
             return item;
           }
@@ -111,14 +173,17 @@ class ProductListing extends Component {
       if (filters.discount) {
         filteredData = filteredData.filter(item => {
           if (
-            item.discount >= filters.discount.min &&
-            item.discount <= filters.discount.max
+            (item.discount >= filters.discount.min ||
+              filters.discount.min === "Min") &&
+            (item.discount <= filters.discount.max ||
+              filters.discount.max === "Max")
           ) {
             return item;
           }
         });
       }
     } catch {}
+    this.setState({ filteredProducts: filteredData });
     return filteredData;
   };
 
@@ -131,14 +196,29 @@ class ProductListing extends Component {
           <div className={styles.filters}>
             <div className={styles.filterMenu}>
               <h3>Manage Filters</h3>
-              <span>
+              <span onClick={this.resetFilters}>
                 <MdRefresh /> Reset
               </span>
             </div>
-            <CheckboxFilter onChange={this.colorFilterUpdated} title="Colors" options={this.state.colorFilter} />
+            <CheckboxFilter
+              selectedFilter={this.state.selectedFilter.color}
+              onChange={this.colorFilterUpdated}
+              title="Colors"
+              options={this.state.colorFilter}
+            />
             {/* <CheckboxFilter title="Brands" options={brandOptions} /> */}
-            <MinMaxFilter title="Price" data={this.state.priceFilter} />
-            <MinMaxFilter title="Discount" data={discountOptions} />
+            <MinMaxFilter
+              title="Price"
+              selectedFilter={this.state.selectedFilter.price}
+              data={this.state.priceFilter}
+              onChange={this.priceFilterUpdated}
+            />
+            <MinMaxFilter
+              title="Discount"
+              selectedFilter={this.state.selectedFilter.discount}
+              data={discountOptions}
+              onChange={this.discountFilterUpdated}
+            />
           </div>
           {/* Load the product catalog */}
           <div className={styles.productCatalog}>

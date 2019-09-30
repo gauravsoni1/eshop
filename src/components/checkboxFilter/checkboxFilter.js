@@ -1,43 +1,50 @@
-import React from "react";
+import React, { Component } from "react";
 import styles from "./checkboxFilter.module.scss";
 
 const selectedCheckbox = [];
 
-const CheckboxFilter = props => {
-  
-
-  const toggleCheckbox = e => {
+class CheckboxFilter extends Component {
+  toggleCheckbox = e => {
     const item = e.target.value;
+    let tempFilters = [...this.props.selectedFilter];
+
     if (e.target.checked) {
-      selectedCheckbox.push(item);
+      tempFilters.push(e.target.value);
     } else if (!e.target.checked) {
-      const index = selectedCheckbox.findIndex(val => val === item);
-      selectedCheckbox.splice(index, 1);
+      const index = tempFilters.findIndex(val => val === item);
+      tempFilters.splice(index, 1);
     }
-    if (typeof props.onChange === "function") {
-      props.onChange(selectedCheckbox);
+    if (typeof this.props.onChange === "function") {
+      this.props.onChange(tempFilters);
     }
   };
 
-  const renderOptions = () => {
-    return props.options.map((item, index) => {
+  renderOptions = () => {
+    return this.props.options.map((item, index) => {
       return (
         <label key={item.color}>
           <span>{item.title}</span>
-          <input onChange={toggleCheckbox} type="checkbox" value={item.color} />
+          <input
+            checked={this.props.selectedFilter.includes(item.color)}
+            onChange={this.toggleCheckbox}
+            type="checkbox"
+            value={item.color}
+          />
         </label>
       );
     });
   };
 
-  return (
-    <div className={styles.checkboxFilter}>
-      <p>
-        <strong>{props.title}</strong>
-      </p>
-      {renderOptions()}
-    </div>
-  );
-};
+  render() {
+    return (
+      <div className={styles.checkboxFilter}>
+        <p>
+          <strong>{this.props.title}</strong>
+        </p>
+        {this.renderOptions()}
+      </div>
+    );
+  }
+}
 
 export default CheckboxFilter;
