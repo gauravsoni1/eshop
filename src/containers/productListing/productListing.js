@@ -45,7 +45,8 @@ class ProductListing extends Component {
       color: [],
       price: { min: "Min", max: "Max" },
       discount: { min: "Min", max: "Max" }
-    }
+    },
+    productsInCart:[]
   };
 
   //Helper function to find the required filter
@@ -76,7 +77,7 @@ class ProductListing extends Component {
   //Render the list of product catalog
   renderProducts = () => {
     return this.state.filteredProducts.map(product => {
-      return <Product key={product.id} data={product} />;
+      return <Product key={product.id} addProduct={this.addProductToCart} data={product} />;
     });
   };
 
@@ -145,7 +146,12 @@ class ProductListing extends Component {
         this.filterData(this.state.products, this.state.selectedFilter);
       }
     );
-    console.log(this.state);
+  };
+
+  addProductToCart = (product) =>{
+    this.setState(prevdata=>{
+      return {productsInCart:[...prevdata.productsInCart,product]}
+    })
   };
 
   filterData = (arr, filters) => {
@@ -190,7 +196,7 @@ class ProductListing extends Component {
   render() {
     return (
       <div className={styles.listingContainer}>
-        <Header onSearch={this.handleSearch}></Header>
+        <Header onSearch={this.handleSearch} cartCount={this.state.productsInCart.length}></Header>
         <main>
           {/* Filters menu on the left */}
           <div className={styles.filters}>

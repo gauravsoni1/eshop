@@ -1,3 +1,5 @@
+$error-color: rgb(208, 2, 50);
+
 .loginPage{
     display:flex;
     justify-content: center;
@@ -24,4 +26,9 @@
 .loginBody{
     display: flex;
     flex-direction: column;
+    .errorMessage{
+        color: $error-color;
+        padding: 5px;
+        margin-top:10px;
+    }
 }

@@ -29,10 +29,10 @@ const Header = (props) => {
       <input placeholder="Search Products" onKeyDown={keydown} onKeyUp={keyUp}/>
       <div className={styles.userDetails}>
         <div>
-          <MdPermIdentity /> Welcome User X
+          <MdPermIdentity /> Welcome {sessionStorage.getItem("fullName")}
         </div>
         <div>
-          <MdShoppingCart /> 1 Item
+          <MdShoppingCart /> {props.cartCount} Item
         </div>
       </div>
     </header>

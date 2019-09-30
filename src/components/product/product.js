@@ -3,6 +3,13 @@ import styles from "./product.module.scss";
 import { MdAddCircleOutline } from "react-icons/md";
 
 const Product = props => {
+  const addProduct = (product) =>{
+    if (typeof(props.addProduct)==='function'){
+      props.addProduct(product);
+    }
+    console.log(product);
+  }
+
   return (
     <div className={styles.productContainer}>
       <div className={styles.productImage}>
@@ -20,7 +27,7 @@ const Product = props => {
         </span>
         <span>
           <strong>{props.data.brand}</strong>
-          <div className={styles.colorDetails}>
+          <div className={[styles.addToCard,styles.colorDetails].join(" ")} onClick={()=>addProduct(props.data)}>
             <MdAddCircleOutline />
             <span>Add</span>
           </div>
